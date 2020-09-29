@@ -17,3 +17,18 @@ body {
     border-radius: 5px;
     margin: 4rem auto !important;
   }
+
+  .search-button {
+    background-color: #001919 !important;
+    width: 100px;
+    border: 2px solid black !important;
+    border-radius: 5px;
+    color: white !important;
+  }
+  .botao{
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center;
+  }
+
