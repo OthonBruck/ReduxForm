@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Formulario from "./components/Formulario";
+import Formulario from "./components/Formulario.jsx";
 
 function App() {
   return (

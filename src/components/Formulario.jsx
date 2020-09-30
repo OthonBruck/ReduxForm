@@ -2,6 +2,20 @@ import React, { Component } from "react";
 import { Form, Field, reduxForm } from "redux-form";
 import { Grid, Button } from "semantic-ui-react";
 
+
+const cnpjNormalizer = (value) => {
+  return value
+    .replace(/\D/g, '') // substitui qualquer caracter que nao seja numero por nada
+    .replace(/(\d{2})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1/$2')
+    .replace(/(\d{4})(\d)/, '$1-$2')
+};
+
+const agenciaNormalizer = (value) => {
+  return value
+    .replace(/\D/g, '') // substitui qualquer caracter que nao seja numero por nada
+};
 export default class Formulario extends Component {
   render() {
     return (
@@ -34,10 +48,12 @@ export default class Formulario extends Component {
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
               <Field
+              maxLength={18}
                 name="CNPJ"
                 component="input"
                 type="text"
                 label="Tipos de Seguro"
+                normalize={cnpjNormalizer}
               />
             </Grid.Column>
           </Grid.Row>
@@ -53,7 +69,7 @@ export default class Formulario extends Component {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
-              <Field name="NúmeroAgencia" component="input" type="text" />
+              <Field maxLength={4} name="NúmeroAgencia" component="input" type="text" normalize={agenciaNormalizer} />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
