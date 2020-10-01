@@ -2,41 +2,67 @@ import React, { Component } from "react";
 import { Form, Field, reduxForm } from "redux-form";
 import { Grid, Button } from "semantic-ui-react";
 
-
 const cnpjNormalizer = (value) => {
   return value
-    .replace(/\D/g, '') // substitui qualquer caracter que nao seja numero por nada
-    .replace(/(\d{2})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1/$2')
-    .replace(/(\d{4})(\d)/, '$1-$2')
+    .replace(/\D/g, "")
+    .replace(/(\d{2})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
 };
 
 const agenciaNormalizer = (value) => {
-  return value
-    .replace(/\D/g, '') // substitui qualquer caracter que nao seja numero por nada
+  return value.replace(/\D/g, ""); 
 };
 
-const validate = values => {
-  const errors = {}
+const validate = (values) => {
+  const errors = {};
   if (!values.email) {
-    errors.email = 'Required'
+    errors.email = "Required";
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    errors.email = 'Invalid email address'
+    errors.email = "Invalid email address";
   }
-  return errors
-}
+  return errors;
+};
 
-const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
+const renderField = ({
+  input,
+  label,
+  type,
+  meta: { touched, error, warning },
+}) => (
   <div>
     <label>{label}</label>
     <div>
-      <input {...input} placeholder={label} type={type}/>
-      {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+      <input {...input} placeholder={label} type={type} />
+      {touched &&
+        ((error && <span>{error}</span>) ||
+          (warning && <span>{warning}</span>))}
     </div>
   </div>
-)
+);
 
+const renderSelectField = ({
+  input,
+  label,
+  meta: { touched, error },
+  children,
+  ...custom
+}) => (
+  <div>
+    <label>{label}</label>
+    <div>
+      <select
+        floatingLabelText={label}
+        errorText={touched && error}
+        {...input}
+        onChange={(event, index, value) => input.onChange(value)}
+        children={children}
+        {...custom}
+      />
+    </div>
+  </div>
+);
 
 export default class Formulario extends Component {
   render() {
@@ -48,7 +74,7 @@ export default class Formulario extends Component {
               <Field
                 name="tiposseguro"
                 type="select"
-                component="select"
+                component={renderSelectField}
                 label="Tipos de Seguro"
               >
                 <option value="#ff0000">Reddsadas </option>
@@ -58,9 +84,9 @@ export default class Formulario extends Component {
             </Grid.Column>
             <Grid.Column width={8}>
               <Field
-              type="select"
+                type="select"
                 name="TiposCapital"
-                component="select"
+                component={renderSelectField}
                 label="Tipos de Capital"
               >
                 <option value="#ff0000">Reddasdassd</option>
@@ -72,7 +98,7 @@ export default class Formulario extends Component {
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
               <Field
-              maxLength={18}
+                maxLength={18}
                 name="CNPJ"
                 component={renderField}
                 type="text"
@@ -83,22 +109,44 @@ export default class Formulario extends Component {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
-              <Field name="RazaoSocial" component={renderField} type="text" label="Razão Social"/>
+              <Field
+                name="RazaoSocial"
+                component={renderField}
+                type="text"
+                label="Razão Social"
+              />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
-              <Field name="email" component={renderField} type="text"  label="E-mail"/>
+              <Field
+                name="email"
+                component={renderField}
+                type="text"
+                label="E-mail"
+              />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
-              <Field maxLength={4} name="NúmeroAgencia" component={renderField}type="text" normalize={agenciaNormalizer} label="Número da Agencia" />
+              <Field
+                maxLength={4}
+                name="NúmeroAgencia"
+                component={renderField}
+                type="text"
+                normalize={agenciaNormalizer}
+                label="Número da Agencia"
+              />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
-              <Field name="NomeAgencia" component={renderField} type="text" label="Nome da Agencia" />
+              <Field
+                name="NomeAgencia"
+                component={renderField}
+                type="text"
+                label="Nome da Agencia"
+              />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row className="botao">
