@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Field, reduxForm } from "redux-form";
-import { Grid, Button } from "semantic-ui-react";
+import { Grid, Button, Select, Input } from "semantic-ui-react";
 
 const cnpjNormalizer = (value) => {
   return value
@@ -8,11 +8,13 @@ const cnpjNormalizer = (value) => {
     .replace(/(\d{2})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d)/, "$1/$2")
-    .replace(/(\d{4})(\d)/, "$1-$2");
+    .replace(/(\d{4})(\d)/, "$1-$2")
+    .replace(/(-\d{2})\d+?$/, '$1');
 };
 
 const agenciaNormalizer = (value) => {
-  return value.replace(/\D/g, ""); 
+  return value.replace(/\D/g, "")
+  .replace(/(\d{4})\d+?$/, '$1');
 };
 
 const validate = (values) => {
@@ -34,7 +36,7 @@ const renderField = ({
   <div>
     <label>{label}</label>
     <div>
-      <input {...input} placeholder={label} type={type} />
+      <Input {...input} placeholder={label} type={type} />
       {touched &&
         ((error && <span>{error}</span>) ||
           (warning && <span>{warning}</span>))}
@@ -52,17 +54,23 @@ const renderSelectField = ({
   <div>
     <label>{label}</label>
     <div>
-      <select
-        floatingLabelText={label}
+      <Select
         errorText={touched && error}
         {...input}
         onChange={(event, index, value) => input.onChange(value)}
-        children={children}
+        options={colors}
+        value={colors.value}
         {...custom}
       />
     </div>
   </div>
 );
+const colors = [
+  { key: 'yellow', value: 'ye', text: 'Yellow' },
+  { key: 'black', value: 'bl', text: 'Black' },
+  { key: 'green', value: 'gr', text: 'Green' },
+  { key: 'red', value: 're', text: 'Red' },
+]
 
 export default class Formulario extends Component {
   render() {
@@ -77,9 +85,6 @@ export default class Formulario extends Component {
                 component={renderSelectField}
                 label="Tipos de Seguro"
               >
-                <option value="#ff0000">Reddsadas </option>
-                <option value="#00ff00">Green</option>
-                <option value="#0000ff">Blue</option>
               </Field>
             </Grid.Column>
             <Grid.Column width={8}>
@@ -89,7 +94,7 @@ export default class Formulario extends Component {
                 component={renderSelectField}
                 label="Tipos de Capital"
               >
-                <option value="#ff0000">Reddasdassd</option>
+                <option value="#ff0000">Red</option>
                 <option value="#00ff00">Green</option>
                 <option value="#0000ff">Blue</option>
               </Field>
