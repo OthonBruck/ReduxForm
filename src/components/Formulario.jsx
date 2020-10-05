@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Field, reduxForm, Form } from "redux-form";
-import { Grid, Button, Select, Input } from "semantic-ui-react";
+import { Field, reduxForm, Form} from "redux-form";
+import { Grid, Button, Select, Input, Popup, Label } from "semantic-ui-react";
 
 const cnpjNormalizer = (value) => {
   return value
@@ -15,6 +15,7 @@ const cnpjNormalizer = (value) => {
 const agenciaNormalizer = (value) => {
   return value.replace(/\D/g, "").replace(/(\d{4})\d+?$/, "$1");
 };
+
 
 const validate = (values) => {
   const errors = {};
@@ -55,31 +56,40 @@ const renderField = ({
   meta: { touched, invalid, error },
   ...custom
 }) => (
-  <Input
-    {...input}
-    label={label}
-    placeholder={label}
-    error={touched && invalid}
-    {...custom}
-  />
+  <div>
+    <Label color="teal">{label}</Label>
+    <div>
+      <Input
+        {...input}
+        placeholder={label}
+        error={touched && invalid}
+        {...custom}
+      />
+    </div>
+  </div>
 );
 
 const Selectrender = ({
   input,
+  label,
   required,
   options,
   meta: { touched, error },
   ...rest
 }) => (
-  <Select
-    value={input.value}
-    required={required}
-    options={countryOptions}
-    onChange={(event, data) => input.onChange(data.value)}
-    {...rest}
-  />
+  <div>
+    <Label color="teal">{label}</Label>
+    <div>
+      <Select
+        value={input.value}
+        required={required}
+        options={countryOptions}
+        onChange={(event, data) => input.onChange(data.value)}
+        {...rest}
+      />
+    </div>
+  </div>
 );
-
 
 const countryOptions = [
   { key: "af", value: "af", text: "Afghanistan" },
@@ -100,7 +110,7 @@ const countryOptions = [
   { key: "bs", value: "bs", text: "Bahamas" },
   { key: "bh", value: "bh", text: "Bahrain" },
   { key: "bd", value: "bd", text: "Bangladesh" },
-  { key: "bb", value: "bb", text: "Barbados" },   
+  { key: "bb", value: "bb", text: "Barbados" },
   { key: "by", value: "by", text: "Belarus" },
   { key: "be", value: "be", text: "Belgium" },
   { key: "bz", value: "bz", text: "Belize" },
@@ -109,12 +119,11 @@ const countryOptions = [
 
 class Formulario extends Component {
   submit = (values) => {
-    console.log("AJEITA");
     console.log(values);
   };
 
   render() {
-    const {submitting, pristine, invalid } = this.props;
+    const { submitting, pristine, invalid} = this.props;
     return (
       <Form onSubmit={this.props.handleSubmit(this.submit)}>
         <Grid className="formulario">
@@ -125,7 +134,6 @@ class Formulario extends Component {
                 name="tiposSeguro"
                 component={Selectrender}
                 label="Tipos de Seguro"
-                
               ></Field>
             </Grid.Column>
             <Grid.Column width={8}>
@@ -187,14 +195,25 @@ class Formulario extends Component {
                 name="nomeAgencia"
                 component={renderField}
                 type="text"
-                label="Nome da Agencia"
+                label={
+                  <Popup
+                    content='Ao preencher o número da agência o campo "Nome da Agência" será preenchido automaticamente!'
+                    position="top right"
+                    trigger={<label>Número da Agência 🛈</label>}
+                  />
+                }
+                placeholder="Nome da Agencia"
                 readOnly={true}
               />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row className="botao">
             <Grid.Column width={16}>
-              <Button type="submit" className="search-button" disabled={pristine || submitting || invalid}>
+              <Button
+                type="submit"
+                className="search-button"
+                disabled={pristine || submitting || invalid}
+              >
                 Enviar
               </Button>
             </Grid.Column>
@@ -206,6 +225,6 @@ class Formulario extends Component {
 }
 
 export default Formulario = reduxForm({
-  form: "contact",
+  form: "formulario",
   validate,
 })(Formulario);
