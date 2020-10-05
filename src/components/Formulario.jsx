@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Field, reduxForm, submit, Form } from "redux-form";
+import { Field, reduxForm, Form } from "redux-form";
 import { Grid, Button, Select, Input } from "semantic-ui-react";
 
 const cnpjNormalizer = (value) => {
@@ -64,116 +64,77 @@ const renderField = ({
   />
 );
 
-const createRenderer = (render) => ({ input, meta, label, ...rest }) => (
-  <div
-    className={[
-      meta.error && meta.touched ? "error" : "",
-      meta.active ? "active" : "",
-    ].join(" ")}
-  >
-    <label>{label}</label>
-    {render(input, label, rest)}
-    {meta.error && meta.touched && <span>{meta.error}</span>}
-  </div>
+const Selectrender = ({
+  input,
+  required,
+  options,
+  meta: { touched, error },
+  ...rest
+}) => (
+  <Select
+    value={input.value}
+    required={required}
+    options={countryOptions}
+    onChange={(event, data) => input.onChange(data.value)}
+    {...rest}
+  />
 );
 
-const RenderSelect = createRenderer((input, label, { children }) => (
-  <select {...input}>{children}</select>
-));
 
-const colors = [
-  'A Coruña',
-  'Álava',
-  'Albacete',
-  'Alicante',
-  'Almería',
-  'Asturias',
-  'Ávila',
-  'Badajoz',
-  'Balearic Islands',
-  'Barcelona',
-  'Burgos',
-  'Cáceres',
-  'Cádiz',
-  'Cantabria',
-  'Castellón',
-  'Ciudad Real',
-  'Córdoba',
-  'Cuenca',
-  'Guipúzcoa',
-  'Gerona',
-  'Granada',
-  'Guadalajara',
-  'Huelva',
-  'Huesca',
-  'Jaén',
-  'La Rioja',
-  'Las Palmas',
-  'León',
-  'Lérida',
-  'Lugo',
-  'Madrid',
-  'Málaga',
-  'Murcia',
-  'Navarra',
-  'Orense',
-  'Palencia',
-  'Pontevedra',
-  'Salamanca',
-  'Santa Cruz de Tenerife',
-  'Segovia',
-  'Sevilla',
-  'Soria',
-  'Tarragona',
-  'Teruel',
-  'Toledo',
-  'Valencia',
-  'Valladolid',
-  'Vizcaya',
-  'Zamora',
-  'Zaragoza'
+const countryOptions = [
+  { key: "af", value: "af", text: "Afghanistan" },
+  { key: "ax", value: "ax", text: "Aland Islands" },
+  { key: "al", value: "al", text: "Albania" },
+  { key: "dz", value: "dz", text: "Algeria" },
+  { key: "as", value: "as", text: "American Samoa" },
+  { key: "ad", value: "ad", text: "Andorra" },
+  { key: "ao", value: "ao", text: "Angola" },
+  { key: "ai", value: "ai", text: "Anguilla" },
+  { key: "ag", value: "ag", text: "Antigua" },
+  { key: "ar", value: "ar", text: "Argentina" },
+  { key: "am", value: "am", text: "Armenia" },
+  { key: "aw", value: "aw", text: "Aruba" },
+  { key: "au", value: "au", text: "Australia" },
+  { key: "at", value: "at", text: "Austria" },
+  { key: "az", value: "az", text: "Azerbaijan" },
+  { key: "bs", value: "bs", text: "Bahamas" },
+  { key: "bh", value: "bh", text: "Bahrain" },
+  { key: "bd", value: "bd", text: "Bangladesh" },
+  { key: "bb", value: "bb", text: "Barbados" },   
+  { key: "by", value: "by", text: "Belarus" },
+  { key: "be", value: "be", text: "Belgium" },
+  { key: "bz", value: "bz", text: "Belize" },
+  { key: "bj", value: "bj", text: "Benin" },
 ];
 
 class Formulario extends Component {
   submit = (values) => {
-    console.log("AJEITA ESSA PORRA");
+    console.log("AJEITA");
     console.log(values);
   };
 
   render() {
+    const {submitting, pristine, invalid } = this.props;
     return (
       <Form onSubmit={this.props.handleSubmit(this.submit)}>
         <Grid className="formulario">
           <Grid.Row>
             <Grid.Column width={8} textAlign="right">
               <Field
-                name="tiposSeguro"
                 type="select"
-                component={RenderSelect}
+                name="tiposSeguro"
+                component={Selectrender}
                 label="Tipos de Seguro"
-              >
-                                <option />
-                {colors.map((colors) => (
-                  <option key={colors} value={colors}>
-                    {colors}
-                  </option>
-                ))}
-              </Field>
+                
+              ></Field>
             </Grid.Column>
             <Grid.Column width={8}>
               <Field
                 type="select"
                 name="tiposCapital"
-                component={RenderSelect}
+                component={Selectrender}
                 label="Tipos de Capital"
-              >
-                <option />
-                {colors.map((colors) => (
-                  <option key={colors} value={colors}>
-                    {colors}
-                  </option>
-                ))}
-              </Field>
+              ></Field>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
@@ -227,12 +188,13 @@ class Formulario extends Component {
                 component={renderField}
                 type="text"
                 label="Nome da Agencia"
+                readOnly={true}
               />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row className="botao">
             <Grid.Column width={16}>
-              <Button type="submit" className="search-button">
+              <Button type="submit" className="search-button" disabled={pristine || submitting || invalid}>
                 Enviar
               </Button>
             </Grid.Column>
