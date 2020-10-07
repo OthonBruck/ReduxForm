@@ -1,6 +1,9 @@
 import React, { Component } from "react";
-import { Field, reduxForm, Form} from "redux-form";
+import { Field, reduxForm, Form } from "redux-form";
 import { Grid, Button, Select, Input, Popup, Label } from "semantic-ui-react";
+import { connect } from 'react-redux';
+import { bindActionCreators } from "redux";
+import { creators as ReposiActions } from "../store/reducer/index";
 
 const cnpjNormalizer = (value) => {
   return value
@@ -15,7 +18,6 @@ const cnpjNormalizer = (value) => {
 const agenciaNormalizer = (value) => {
   return value.replace(/\D/g, "").replace(/(\d{4})\d+?$/, "$1");
 };
-
 
 const validate = (values) => {
   const errors = {};
@@ -69,7 +71,7 @@ const renderField = ({
   </div>
 );
 
-const Selectrender = ({
+const selectRender = ({
   input,
   label,
   required,
@@ -83,7 +85,7 @@ const Selectrender = ({
       <Select
         value={input.value}
         required={required}
-        options={countryOptions}
+        options={options}
         onChange={(event, data) => input.onChange(data.value)}
         {...rest}
       />
@@ -117,10 +119,16 @@ const countryOptions = [
   { key: "bj", value: "bj", text: "Benin" },
 ];
 
+
+
 class Formulario extends Component {
   submit = (values) => {
     console.log(values);
+    console.log(this.props.getTipoSeguro())
+
   };
+
+  
 
   render() {
     const { submitting, pristine, invalid} = this.props;
@@ -131,16 +139,18 @@ class Formulario extends Component {
             <Grid.Column width={8} textAlign="right">
               <Field
                 type="select"
+                options={countryOptions}
                 name="tiposSeguro"
-                component={Selectrender}
+                component={selectRender}
                 label="Tipos de Seguro"
               ></Field>
             </Grid.Column>
             <Grid.Column width={8}>
               <Field
                 type="select"
+                options={countryOptions}
                 name="tiposCapital"
-                component={Selectrender}
+                component={selectRender}
                 label="Tipos de Capital"
               ></Field>
             </Grid.Column>
@@ -224,7 +234,20 @@ class Formulario extends Component {
   }
 }
 
-export default Formulario = reduxForm({
+Formulario = reduxForm({
   form: "formulario",
   validate,
 })(Formulario);
+
+
+const mapStateToProps = (state) => ({
+  formReducer: state.formReducer,
+});
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators(ReposiActions, dispatch);
+
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Formulario);
