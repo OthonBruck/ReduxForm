@@ -35,10 +35,10 @@ const stateSuccess = {
 };
 
 const INITIALSTATE = {
-  tipoSeguro: {
+  tipoCapital: {
     data: [],
   },
-  tipoCapital: {
+  tipoSeguro: {
     data: [],
   },
   agencias: [],
@@ -50,12 +50,14 @@ const reducer = (state = INITIALSTATE, action) => {
       return {
         ...state,
         stateLoading,
-        tipoSeguro: null,
+        tipoSeguro: {
+          data: [],
+        },
       };
     case Types.GET_TIPO_SEGURO_SUCCESS:
       return {
         ...state,
-        stateSuccess,
+        ...stateSuccess,
         tipoSeguro: {
           ...state.tipoSeguro,
           data: action.payload,
@@ -71,12 +73,14 @@ const reducer = (state = INITIALSTATE, action) => {
       return {
         ...state,
         stateLoading,
-        tipoCapital: null,
+        tipoCapital: {
+          data: [],
+        },
       };
     case Types.GET_TIPO_CAPITAL_SUCCESS:
       return {
         ...state,
-        stateSuccess,
+        ...stateSuccess,
         tipoCapital: {
           ...state.tipoCapital,
           data: action.payload,
@@ -97,7 +101,7 @@ const reducer = (state = INITIALSTATE, action) => {
     case Types.GET_AGENCIA_SUCCESS:
       return {
         ...state,
-        stateSuccess,
+        ...stateSuccess,
         agencias: action.payload,
       };
     case Types.GET_AGENCIA_FAIL:
