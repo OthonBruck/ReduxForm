@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { Field, reduxForm, Form } from "redux-form";
+import {
+  Field,
+  reduxForm,
+  Form,
+  formValueSelector,
+  getFormValues,
+} from "redux-form";
 import { Grid, Button, Select, Input, Popup, Label } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -46,7 +52,7 @@ const validate = (values) => {
 
   if (!values.numeroAgencia) {
     errors.numeroAgencia = <div className="erro">⚠ Obrigatório</div>;
-  } else if (values.numeroAgencia.length !== 4) {
+  } else if (values.numeroAgencia.length > 4) {
     errors.numeroAgencia = <div className="erro">⚠ Número inválido</div>;
   }
   return errors;
@@ -93,33 +99,108 @@ const selectRender = ({
   </div>
 );
 
+
+const tiposSegurosCheck = (tiposeg) => {
+  if (tiposeg){
+      return false
+  } else {
+      return true
+  }
+}
+
+const tiposCapitalCheck = (tipocap) => {
+  if (tipocap){
+      return false
+  } else {
+      return true
+  }
+}
+
+const cnpjCheck = (cnpj) => {
+  if (cnpj && cnpj.length === 18){
+      return false
+  } else {
+      return true
+  }
+}
+
+const razaoSocialCheck = (rsocial) => {
+  if (rsocial){
+      return false
+  } else {
+      return true
+  }
+}
+
+const emailCheck = (email) => {
+  if (email && /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)){
+      return false
+  } else {
+      return true
+  }
+}
+
+
 class Formulario extends Component {
   state = {
     tiposSeguro: [],
-    tiposCapital: []
+    tiposCapital: [],
   };
 
   submit = (values) => {
     console.log(values);
   };
 
-
   componentWillMount() {
-    this.props.getTipoSeguro()
-    this.props.getTipoCapital()
+    this.props.getTipoSeguro();
+    this.props.getTipoCapital();
+    this.props.getAgencia();
   }
 
   componentWillUpdate() {
-    if (this.props.dadosAppState.success && this.state.tiposSeguro.length === 0) {
-      this.setState({tiposSeguro: this.props.dadosAppState.tipoSeguro.data})
-    } else if ((this.props.dadosAppState.success && this.state.tiposCapital.length === 0)) {
-      this.setState({tiposCapital: this.props.dadosAppState.tipoCapital.data})
+    if (
+      this.props.dadosAppState.success &&
+      this.state.tiposSeguro.length === 0
+    ) {
+      this.setState({ tiposSeguro: this.props.dadosAppState.tipoSeguro.data });
+    } else if (
+      this.props.dadosAppState.success &&
+      this.state.tiposCapital.length === 0
+    ) {
+      this.setState({
+        tiposCapital: this.props.dadosAppState.tipoCapital.data,
+      });
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.numeroAgenciaValue !== this.props.numeroAgenciaValue &&
+      this.props.numeroAgenciaValue
+    ) {
+      this.onChangeAgencia();
+    }
+  }
+
+  onChangeAgencia = () => {
+    console.log(this.props)
+    if (
+      this.props.dadosAppState.agencias &&
+      this.props.dadosAppState.agencias !== [] &&
+      this.props.numeroAgenciaValue
+    ) {
+      const respAgencia = this.props.dadosAppState.agencias.find(
+        (a) => a.numero === this.props.numeroAgenciaValue
+      );
+      console.log("respAgencia", respAgencia);
+      this.props.change("nomeAgencia", respAgencia ? respAgencia.nome : "");
+    }
+  };
+
 
   render() {
-    const { submitting, pristine, invalid } = this.props;
+    console.log(this.props)
+    const { submitting, pristine, invalid, tiposSegurosValue, tiposCapitalValue, cnpjValue, razaoSocialValue, emailValue} = this.props;
     return (
       <Form onSubmit={this.props.handleSubmit(this.submit)}>
         <Grid className="formulario">
@@ -140,6 +221,7 @@ class Formulario extends Component {
                 name="tiposCapital"
                 component={selectRender}
                 label="Tipos de Capital"
+                disabled={tiposSegurosCheck(tiposSegurosValue)}
               ></Field>
             </Grid.Column>
           </Grid.Row>
@@ -152,6 +234,7 @@ class Formulario extends Component {
                 type="text"
                 label="CNPJ"
                 normalize={cnpjNormalizer}
+                disabled={tiposCapitalCheck(tiposCapitalValue)} 
               />
             </Grid.Column>
           </Grid.Row>
@@ -162,6 +245,7 @@ class Formulario extends Component {
                 component={renderField}
                 type="text"
                 label="Razão Social"
+                disabled={cnpjCheck(cnpjValue)}
               />
             </Grid.Column>
           </Grid.Row>
@@ -172,6 +256,7 @@ class Formulario extends Component {
                 component={renderField}
                 type="text"
                 label="E-mail"
+                disabled={razaoSocialCheck(razaoSocialValue)}
               />
             </Grid.Column>
           </Grid.Row>
@@ -181,9 +266,17 @@ class Formulario extends Component {
                 maxLength={4}
                 name="numeroAgencia"
                 component={renderField}
-                type="text"
+                type="tel"
                 normalize={agenciaNormalizer}
-                label="Número da Agencia"
+                label={
+                  <Popup
+                    content='Ao preencher o número da agência o campo "Nome da Agência" será preenchido automaticamente!'
+                    position="top right"
+                    trigger={<label>Número da Agência 🛈</label>}
+                  />
+                }
+                placeholder="Número da Agência"
+                disabled={emailCheck(emailValue)}
               />
             </Grid.Column>
           </Grid.Row>
@@ -193,13 +286,7 @@ class Formulario extends Component {
                 name="nomeAgencia"
                 component={renderField}
                 type="text"
-                label={
-                  <Popup
-                    content='Ao preencher o número da agência o campo "Nome da Agência" será preenchido automaticamente!'
-                    position="top right"
-                    trigger={<label>Número da Agência 🛈</label>}
-                  />
-                }
+                label="Nome da Agência"
                 placeholder="Nome da Agencia"
                 readOnly={true}
               />
@@ -227,9 +314,28 @@ Formulario = reduxForm({
   validate,
 })(Formulario);
 
+const selector = formValueSelector("formulario");
+Formulario = connect((state) => {
+  const tiposSegurosValue = selector(state, "tiposSeguro");
+  const tiposCapitalValue = selector(state, "tiposCapital");
+  const cnpjValue = selector(state, "cnpj");
+  const razaoSocialValue = selector(state, "razaoSocial");
+  const emailValue = selector(state, "email");
+  const numeroAgenciaValue = selector(state, "numeroAgencia");
+  return {
+    tiposSegurosValue,
+    tiposCapitalValue,
+    cnpjValue,
+    razaoSocialValue,
+    emailValue,
+    numeroAgenciaValue,
+  };
+})(Formulario);
+
 const mapStateToProps = (state) => ({
   formReducer: state.formReducer,
   dadosAppState: state.dadosAppState,
+  valores: getFormValues("Formulario")(state),
 });
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(ReposiActions, dispatch);

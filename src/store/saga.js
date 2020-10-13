@@ -14,7 +14,6 @@ function* tipoSeguro(action) {
         text: resp.nome,
       };
     });
-    console.log(tiposSeguro);
     yield put({
       type: Types.GET_TIPO_SEGURO_SUCCESS,
       payload: tiposSeguro,
@@ -43,7 +42,6 @@ function* tipoCapital(action) {
 function* agencia(action) {
   try {
     const resp = yield api.get(endpoints.AGENCIA);
-
     yield put({
       type: Types.GET_AGENCIA_SUCCESS,
       payload: resp.data,
